@@ -11,14 +11,16 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
+import axios from 'axios';
+import { useHistory } from "react-router-dom";
 
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
+            <Link color="inherit">
+                Redonez
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -59,18 +61,39 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignInSide() {
     const classes = useStyles();
+    let history = useHistory();
+    const [user, setUser] = React.useState({email: "", password: ""});
+
+    function signInUser() {
+        axios.post("http://localhost:8080/API/user/signIn",user).then((res) => {
+            localStorage.setItem("accessToken", res.data.token);
+            localStorage.setItem("user", JSON.stringify(res.data.user));
+            history.push("/home")
+        }).catch(function (error) {
+            alert("Credenciales invalidas!")
+            setUser({email: "", password: ""});
+        });
+    }
+
+    const handleChangeUser = e => {
+        const {name, value} = e.target;
+        setUser(prevState => ({
+            ...prevState,
+            [name]: value
+        }))
+    };
 
     return (
         <Grid container component="main" className={classes.root}>
-            <CssBaseline />
-            <Grid item xs={false} sm={4} md={7} className={classes.image} />
+            <CssBaseline/>
+            <Grid item xs={false} sm={4} md={7} className={classes.image}/>
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                 <div className={classes.paper}>
                     <Avatar className={classes.avatar}>
-                        <LockOutlinedIcon />
+                        <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign in
+                        Iniciar sesión
                     </Typography>
                     <form className={classes.form} noValidate>
                         <TextField
@@ -79,7 +102,9 @@ export default function SignInSide() {
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            onChange={handleChangeUser}
+                            value={user.email}
+                            label="Correo electronico"
                             name="email"
                             autoComplete="email"
                             autoFocus
@@ -90,38 +115,36 @@ export default function SignInSide() {
                             required
                             fullWidth
                             name="password"
-                            label="Password"
+                            label="Contraseña"
+                            onChange={handleChangeUser}
+                            value={user.password}
                             type="password"
                             id="password"
                             autoComplete="current-password"
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
+                            control={<Checkbox value="remember" color="primary"/>}
+                            label="Recuerdame"
                         />
                         <Button
-                            type="submit"
+                            onClick={signInUser}
                             fullWidth
                             variant="contained"
                             color="primary"
                             className={classes.submit}
                         >
-                            Sign In
+                            Iniciar Sesión
                         </Button>
                         <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    Forgot password?
-                                </Link>
-                            </Grid>
+
                             <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
+                                <Link href="/signUp" variant="body2">
+                                    {"No tienes una cuenta? Crea cuenta"}
                                 </Link>
                             </Grid>
                         </Grid>
                         <Box mt={5}>
-                            <Copyright />
+                            <Copyright/>
                         </Box>
                     </form>
                 </div>

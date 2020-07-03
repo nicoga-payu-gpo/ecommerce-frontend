@@ -22,8 +22,9 @@ import Button from "@material-ui/core/Button";
 import Products from "./Products";
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import BallotOutlinedIcon from '@material-ui/icons/Ballot';
-import {Link, Route, useLocation,Switch,useRouteMatch} from "react-router-dom";
+import {Link, Route, useLocation, Switch, useRouteMatch, useHistory, Redirect} from "react-router-dom";
 import ProductsManagement from "./ProductsManagement";
+
 
 function Copyright() {
     return (
@@ -122,21 +123,33 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard() {
     let location = useLocation();
     let { path, url } = useRouteMatch();
+    let history = useHistory();
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const [loggedIn, setLoggedIn] = React.useState(false);
-    const [userRole, setUserRole] = React.useState("ROLE_ADMIN");
+    const [userRole, setUserRole] = React.useState("");
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
     const handleDrawerClose = () => {
         setOpen(false);
     };
+    const logout = () => {
+        localStorage.clear()
+        history.push("/home");
+        window.location.reload()
+    };
     useEffect(() => {
         if (localStorage.getItem("accessToken") != null) {
             setLoggedIn(true);
         }
+        if(localStorage.getItem("user")!=null){
+            setUserRole(JSON.parse(localStorage.getItem("user")).role);
+        }
+
     }, []);
+
 
     return (
         <div className={classes.root}>
@@ -159,7 +172,8 @@ export default function Dashboard() {
                         Redonez
                     </Typography>
                     {loggedIn === false ?
-                        <Button color="inherit">Login</Button>
+                        <Button color="inherit" component={Link}
+                                to={"/signIn"}>Iniciar Sesión</Button>
                         : null
                     }
                 </Toolbar>
@@ -188,13 +202,13 @@ export default function Dashboard() {
                         {userRole === "ROLE_ADMIN" ?
                             <>
                                 <ListItem button style={{whiteSpace: 'normal'}} component={Link}
-                                          to={location.pathname + "/productsManagement"}>
+                                          to={`${url}/productsManagement`}>
                                     <ListItemIcon>
                                         <BallotOutlinedIcon/>
                                     </ListItemIcon>
                                     <ListItemText primary="Administración de productos"/>
                                 </ListItem>
-                                <ListItem button component={Link} to="home/orders">
+                                <ListItem button component={Link} to={`${url}/orders`}>
                                     <ListItemIcon>
                                         <AssignmentIcon/>
                                     </ListItemIcon>
@@ -206,11 +220,11 @@ export default function Dashboard() {
                     <Divider/>
 
                     <List>
-                        <ListItem button key="Logout">
+                        <ListItem button onClick={logout} key="Logout">
                             <ListItemIcon>
                                 <LaunchIcon/>
                             </ListItemIcon>
-                            <ListItemText primary="Logout"/>
+                            <ListItemText   primary="Cerrar sesión"/>
                         </ListItem>
                     </List>
                 </Drawer>
@@ -220,11 +234,12 @@ export default function Dashboard() {
                 <div className={classes.appBarSpacer}/>
                 <Container maxWidth="lg" className={classes.container}>
                     <Switch>
-                        <Route exact path={path} render={props => <Products/>}/>
+                        <Route exact path="/home" render={props => <Products/>}/>
                         <Route path={`${path}/productsManagement`} render={props => <ProductsManagement/>}/>
                         <Route path={`${path}/orders`}>
                             dehsjfgsad
                         </Route>
+                        <Route render={() => <Redirect to="/home"/>}/>
                     </Switch>
 
 

@@ -3,22 +3,22 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import axios from "axios";
+import {useHistory} from "react-router-dom";
 
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
+            <Link color="inherit" href="">
+                Redonez
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -48,40 +48,51 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
     const classes = useStyles();
+    const [newUser, setNewUser] = React.useState({email: "", password: "", fullName: ""});
+    let history = useHistory();
+
+    const handleChangeNewUser = e => {
+        const {name, value} = e.target;
+        setNewUser(prevState => ({
+            ...prevState,
+            [name]: value
+        }))
+    };
+
+    function signUpUser() {
+        axios.post("http://localhost:8080/API/user/signUp", newUser).then((res) => {
+            alert("Cuenta creada exitosamente")
+            history.push("/signIn")
+        }).catch(function (error) {
+            alert("Ha ocurrido un error, intente de nuevo!")
+            setNewUser({email: "", password: "", fullName: ""});
+        });
+    }
 
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline />
+            <CssBaseline/>
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon />
+                    <LockOutlinedIcon/>
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign up
+                    Crear cuenta
                 </Typography>
                 <form className={classes.form} noValidate>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12}>
                             <TextField
                                 autoComplete="fname"
-                                name="firstName"
+                                name="fullName"
                                 variant="outlined"
+                                onChange={handleChangeNewUser}
+                                value={newUser.fullName}
                                 required
                                 fullWidth
                                 id="firstName"
-                                label="First Name"
+                                label="Nombre"
                                 autoFocus
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="lastName"
-                                label="Last Name"
-                                name="lastName"
-                                autoComplete="lname"
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -89,8 +100,10 @@ export default function SignUp() {
                                 variant="outlined"
                                 required
                                 fullWidth
+                                onChange={handleChangeNewUser}
+                                value={newUser.email}
                                 id="email"
-                                label="Email Address"
+                                label="Correo electrónico"
                                 name="email"
                                 autoComplete="email"
                             />
@@ -100,40 +113,37 @@ export default function SignUp() {
                                 variant="outlined"
                                 required
                                 fullWidth
+                                onChange={handleChangeNewUser}
+                                value={newUser.password}
                                 name="password"
-                                label="Password"
+                                label="Contraseña"
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                label="I want to receive inspiration, marketing promotions and updates via email."
-                            />
-                        </Grid>
+
                     </Grid>
                     <Button
-                        type="submit"
+                        onClick={signUpUser}
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
                     >
-                        Sign Up
+                        Crear Cuenta
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link href="#" variant="body2">
-                                Already have an account? Sign in
+                            <Link href="/signIn" variant="body2">
+                                Ya tienes una cuenta? Iniciar sesión
                             </Link>
                         </Grid>
                     </Grid>
                 </form>
             </div>
             <Box mt={5}>
-                <Copyright />
+                <Copyright/>
             </Box>
         </Container>
     );
