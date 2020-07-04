@@ -30,8 +30,8 @@ function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" to="https://material-ui.com/">
-                Your Website
+            <Link color="inherit" to="/home">
+                Redonez
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -121,7 +121,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Dashboard() {
-    let location = useLocation();
     let { path, url } = useRouteMatch();
     let history = useHistory();
     const classes = useStyles();

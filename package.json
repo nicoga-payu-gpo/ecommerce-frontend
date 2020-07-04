@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "@material-ui/core": "latest",
+    "@mui-treasury/components": "^1.5.2",
+    "@mui-treasury/styles": "^1.8.0",
     "clsx": "latest",
     "material-table": "^1.63.1",
+    "mdbreact": "^4.27.0",
     "react": "latest",
     "react-dom": "latest",
     "react-scripts": "latest"

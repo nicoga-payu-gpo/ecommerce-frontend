@@ -77,7 +77,7 @@ export default function Products() {
     }
     function deleteProduct(productId) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("accessToken");
-        axios.delete("http://localhost:8080/API/products"+productId).then((res) => {
+        axios.delete("http://localhost:8080/API/products/"+productId).then((res) => {
             console.log(res);
         }).catch(function (error) {
             console.log(error);
