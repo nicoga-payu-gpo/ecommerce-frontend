@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@material-ui/core": "latest",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@mui-treasury/components": "^1.5.2",
     "@mui-treasury/styles": "^1.8.0",
     "clsx": "latest",

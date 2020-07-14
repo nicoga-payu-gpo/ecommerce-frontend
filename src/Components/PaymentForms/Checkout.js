@@ -1,5 +1,5 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, {useEffect} from 'react';
+import {makeStyles} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
@@ -11,6 +11,8 @@ import Typography from '@material-ui/core/Typography';
 import AddressForm from './AddressForm';
 import PaymentForm from './PaymentForm';
 import Review from './Review';
+import axios from "axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 function Copyright() {
     return (
@@ -62,27 +64,110 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const steps = ['Shipping address', 'Payment details', 'Review your order'];
+const steps = ['Dirección de envío', 'Información de pago', 'Revisa tu orden'];
 
-function getStepContent(step) {
-    switch (step) {
-        case 0:
-            return <AddressForm />;
-        case 1:
-            return <PaymentForm />;
-        case 2:
-            return <Review />;
-        default:
-            throw new Error('Unknown step');
-    }
-}
 
-export default function Checkout() {
+export default function Checkout(props) {
     const classes = useStyles();
+    const user = JSON.parse(localStorage.getItem("user"));
     const [activeStep, setActiveStep] = React.useState(0);
+    const [sameBuyerAndPayer, setSameBuyerAndPayer] = React.useState(false);
+    const [product, setProduct] = React.useState(props.product);
+    const [paymentResponse, setPaymentResponse] = React.useState({response: ""});
+    const [paymentRequest, setPaymentRequest] = React.useState({
+        total: product.price,
+        units: 1,
+        date: new Date(),
+        shippingAddress: {},
+        payer: {
+            billingAddress: {}
+        },
+        product,
+        user
+    });
+
+    function handlePlaceOrderChange() {
+        console.log(paymentRequest)
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("accessToken");
+        axios.post("http://localhost:8080/API/orders", paymentRequest).then((res) => {
+
+            setPaymentResponse({
+                ...paymentResponse,
+                response: res.data
+            });
+            console.log(res.data);
+            console.log(paymentResponse);
+
+        }).catch(function (error) {
+            setPaymentResponse({
+                ...paymentResponse,
+                response: "ERROR"
+            })
+
+            console.log(paymentResponse);
+            console.log(error);
+        });
+    }
+
+    useEffect(() => {
+        setProduct(props.product)
+    }, []);
+
+    function getStepContent(step) {
+        switch (step) {
+            case 0:
+                return <AddressForm
+                    setSameBuyerAndPayer={setSameBuyerAndPayer}
+                    setPaymentRequest={setPaymentRequest}
+                    paymentRequest={paymentRequest}
+                />;
+            case 1:
+                return <PaymentForm
+                    sameBuyerAndPayer={sameBuyerAndPayer}
+                    setPaymentRequest={setPaymentRequest}
+                    paymentRequest={paymentRequest}
+                />;
+            case 2:
+                return <Review
+                    product={product}
+                    paymentRequest={paymentRequest}
+                />;
+            default:
+                throw new Error('Unknown step');
+        }
+    }
+
+    function transactionResult() {
+        if (paymentResponse.response.state === "APPROVED") {
+            return <React.Fragment>
+                <Typography variant="h5" gutterBottom>
+                    Pago realizado exitosamente
+                </Typography>
+                <Typography variant="subtitle1">
+                    Te notificaremos tan pronto se envíe tu pedido.
+                </Typography>
+            </React.Fragment>;
+        } else if (paymentResponse.response.state === "DECLINED" || paymentResponse.response.state === "ERROR") {
+            return <React.Fragment>
+                <Typography variant="h5" gutterBottom>
+                    Error en la transacción
+                </Typography>
+                <Typography variant="subtitle1">
+                    Asegurate de que los datos son correctos y reintenta el pago.
+                </Typography>
+            </React.Fragment>;
+        } else if (paymentResponse.response === "") {
+            return <React.Fragment>
+                <CircularProgress/>
+            </React.Fragment>;
+        }
+    }
 
     const handleNext = () => {
         setActiveStep(activeStep + 1);
+        if (activeStep === steps.length - 1) {
+            handlePlaceOrderChange();
+        }
     };
 
     const handleBack = () => {
@@ -91,11 +176,11 @@ export default function Checkout() {
 
     return (
         <React.Fragment>
-            <CssBaseline />
+            <CssBaseline/>
             <main className={classes.layout}>
                 <Paper className={classes.paper}>
                     <Typography component="h1" variant="h4" align="center">
-                        Checkout
+                        Realizar orden
                     </Typography>
                     <Stepper activeStep={activeStep} className={classes.stepper}>
                         {steps.map((label) => (
@@ -105,23 +190,17 @@ export default function Checkout() {
                         ))}
                     </Stepper>
                     <React.Fragment>
-                        {activeStep === steps.length ? (
+                        {activeStep === steps.length ?
                             <React.Fragment>
-                                <Typography variant="h5" gutterBottom>
-                                    Thank you for your order.
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    Your order number is #2001539. We have emailed your order confirmation, and will
-                                    send you an update when your order has shipped.
-                                </Typography>
+                                {transactionResult()}
                             </React.Fragment>
-                        ) : (
+                            :
                             <React.Fragment>
                                 {getStepContent(activeStep)}
                                 <div className={classes.buttons}>
                                     {activeStep !== 0 && (
                                         <Button onClick={handleBack} className={classes.button}>
-                                            Back
+                                            Atras
                                         </Button>
                                     )}
                                     <Button
@@ -130,14 +209,14 @@ export default function Checkout() {
                                         onClick={handleNext}
                                         className={classes.button}
                                     >
-                                        {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
+                                        {activeStep === steps.length - 1 ? 'Confirmar orden' : 'Siguente'}
                                     </Button>
                                 </div>
                             </React.Fragment>
-                        )}
+                        }
                     </React.Fragment>
                 </Paper>
-                <Copyright />
+                <Copyright/>
             </main>
         </React.Fragment>
     );

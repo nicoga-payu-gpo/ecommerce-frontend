@@ -1,25 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Grid from '@material-ui/core/Grid';
 
-const products = [
-    { name: 'Product 1', desc: 'A nice thing', price: '$9.99' },
-    { name: 'Product 2', desc: 'Another thing', price: '$3.45' },
-    { name: 'Product 3', desc: 'Something else', price: '$6.51' },
-    { name: 'Product 4', desc: 'Best thing of all', price: '$14.11' },
-    { name: 'Shipping', desc: '', price: 'Free' },
-];
-const addresses = ['1 Material-UI Drive', 'Reactville', 'Anytown', '99999', 'USA'];
-const payments = [
-    { name: 'Card type', detail: 'Visa' },
-    { name: 'Card holder', detail: 'Mr John Smith' },
-    { name: 'Card number', detail: 'xxxx-xxxx-xxxx-1234' },
-    { name: 'Expiry date', detail: '04/2024' },
-];
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
@@ -33,51 +19,81 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Review() {
+function format(n) {
+    return n.toFixed(2).replace('.', ',').replace(/\d{3}(?=(\d{3})*,)/g, function (s) {
+        return '.' + s
+    })
+}
+
+export default function Review(props) {
     const classes = useStyles();
 
     return (
         <React.Fragment>
             <Typography variant="h6" gutterBottom>
-                Order summary
+                Resumen de orden
             </Typography>
             <List disablePadding>
-                {products.map((product) => (
-                    <ListItem className={classes.listItem} key={product.name}>
-                        <ListItemText primary={product.name} secondary={product.desc} />
-                        <Typography variant="body2">{product.price}</Typography>
-                    </ListItem>
-                ))}
+                <ListItem className={classes.listItem} key={props.product.name}>
+                    <ListItemText primary={props.product.name} secondary={props.product.description}/>
+                    <Typography variant="body2">${format(props.product.price)}</Typography>
+                </ListItem>
                 <ListItem className={classes.listItem}>
-                    <ListItemText primary="Total" />
+                    <ListItemText primary="Total"/>
                     <Typography variant="subtitle1" className={classes.total}>
-                        $34.06
+                        ${format(props.product.price)}
                     </Typography>
                 </ListItem>
             </List>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <Typography variant="h6" gutterBottom className={classes.title}>
-                        Shipping
+                        Envío
                     </Typography>
-                    <Typography gutterBottom>John Smith</Typography>
-                    <Typography gutterBottom>{addresses.join(', ')}</Typography>
+                    <Typography gutterBottom>{props.paymentRequest.buyerName}</Typography>
+                    <Typography
+                        gutterBottom>{props.paymentRequest.shippingAddress.street1 + ", " + props.paymentRequest.shippingAddress.street2}</Typography>
+                    <Typography
+                        gutterBottom>{props.paymentRequest.shippingAddress.city + ", " + props.paymentRequest.shippingAddress.postalCode}</Typography>
                 </Grid>
                 <Grid item container direction="column" xs={12} sm={6}>
                     <Typography variant="h6" gutterBottom className={classes.title}>
-                        Payment details
+                        Detalles de pago
                     </Typography>
                     <Grid container>
-                        {payments.map((payment) => (
-                            <React.Fragment key={payment.name}>
-                                <Grid item xs={6}>
-                                    <Typography gutterBottom>{payment.name}</Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography gutterBottom>{payment.detail}</Typography>
-                                </Grid>
-                            </React.Fragment>
-                        ))}
+                        <React.Fragment key="0">
+                            <Grid item xs={6}>
+                                <Typography gutterBottom>Titular de la tarjeta</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography gutterBottom>{props.paymentRequest.payer.cardHolderName}</Typography>
+                            </Grid>
+                        </React.Fragment>
+                        <React.Fragment key="1">
+                            <Grid item xs={6}>
+                                <Typography gutterBottom>Número de tarjeta</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography
+                                    gutterBottom>{"xxxx-xxxx-xxxx-" + props.paymentRequest.payer.cardNumber.substr(props.paymentRequest.payer.cardNumber.length - 4)}</Typography>
+                            </Grid>
+                        </React.Fragment>
+                        <React.Fragment key="2">
+                            <Grid item xs={6}>
+                                <Typography gutterBottom>Fecha de vencimiento</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography gutterBottom>{props.paymentRequest.payer.cardExpirationDate}</Typography>
+                            </Grid>
+                        </React.Fragment>
+                        <React.Fragment key="3">
+                            <Grid item xs={6}>
+                                <Typography gutterBottom>Tipo de tarjeta</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography gutterBottom>{props.paymentRequest.payer.cardFranchise}</Typography>
+                            </Grid>
+                        </React.Fragment>
                     </Grid>
                 </Grid>
             </Grid>

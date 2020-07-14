@@ -125,7 +125,7 @@ export default function ProductCard(props) {
                         </Typography>
                     </Toolbar>
                 </AppBar>
-                <Checkout/>
+                <Checkout product={props.product}/>
             </Dialog>
             <Dialog
                 open={open}

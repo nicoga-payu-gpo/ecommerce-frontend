@@ -5,50 +5,94 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
-export default function AddressForm() {
+export default function AddressForm(props) {
+
+    const handleBuyerChange = event => {
+        const {name, value} = event.target;
+        props.setPaymentRequest((prevState) => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+    const handleShippingAddressChange = event => {
+        const {name, value} = event.target;
+        props.setPaymentRequest((prevState) => ({
+            ...prevState,
+            shippingAddress: {
+                ...prevState.shippingAddress,
+                [name]: value
+            }
+        }));
+    };
+    const handleCheckboxChange = event => {
+        if (event.target.checked) {
+            props.setSameBuyerAndPayer(true);
+        } else {
+            props.setSameBuyerAndPayer(false)
+        }
+    };
+
     return (
         <React.Fragment>
             <Typography variant="h6" gutterBottom>
-                Shipping address
+                Dirección de envío
             </Typography>
             <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                     <TextField
                         required
-                        id="firstName"
-                        name="firstName"
-                        label="First name"
+                        id="buyerName"
+                        name="buyerName"
+                        label="Nombre Completo"
                         fullWidth
                         autoComplete="given-name"
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        required
-                        id="lastName"
-                        name="lastName"
-                        label="Last name"
-                        fullWidth
-                        autoComplete="family-name"
+                        value={props.paymentRequest.buyerName || ''}
+                        onChange={handleBuyerChange}
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
                         required
-                        id="address1"
-                        name="address1"
-                        label="Address line 1"
+                        id="buyerDniNumber"
+                        name="buyerDniNumber"
+                        value={props.paymentRequest.buyerDniNumber || ''}
+                        type="number"
+                        label="Número de identificación"
+                        onChange={handleBuyerChange}
                         fullWidth
-                        autoComplete="shipping address-line1"
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
-                        id="address2"
-                        name="address2"
-                        label="Address line 2"
+                        required
+                        id="buyerPhone"
+                        name="buyerPhone"
+                        value={props.paymentRequest.buyerPhone || ''}
+                        type="number"
+                        label="Telefono de contacto."
+                        onChange={handleBuyerChange}
                         fullWidth
-                        autoComplete="shipping address-line2"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        required
+                        id="street1"
+                        name="street1"
+                        value={props.paymentRequest.shippingAddress.street1 || ''}
+                        label="Dirección"
+                        onChange={handleShippingAddressChange}
+                        fullWidth
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        id="street2"
+                        name="street2"
+                        value={props.paymentRequest.shippingAddress.street2 || ''}
+                        label="Conjunto/casa/apartamento"
+                        onChange={handleShippingAddressChange}
+                        fullWidth
                     />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -56,38 +100,38 @@ export default function AddressForm() {
                         required
                         id="city"
                         name="city"
-                        label="City"
+                        value={props.paymentRequest.shippingAddress.city || ''}
+                        label="Ciudad"
                         fullWidth
                         autoComplete="shipping address-level2"
+                        onChange={handleShippingAddressChange}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                    <TextField id="state" name="state" label="State/Province/Region" fullWidth />
+                    <TextField id="state"
+                               name="state"
+                               value={props.paymentRequest.shippingAddress.state || ''}
+                               onChange={handleShippingAddressChange}
+                               label="Departamento"
+                               fullWidth/>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <TextField
                         required
-                        id="zip"
-                        name="zip"
-                        label="Zip / Postal code"
+                        id="postalCode"
+                        name="postalCode"
+                        value={props.paymentRequest.shippingAddress.postalCode || ''}
+                        label="Código postal"
                         fullWidth
                         autoComplete="shipping postal-code"
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        required
-                        id="country"
-                        name="country"
-                        label="Country"
-                        fullWidth
-                        autoComplete="shipping country"
+                        onChange={handleShippingAddressChange}
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <FormControlLabel
-                        control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
-                        label="Use this address for payment details"
+                        control={<Checkbox color="secondary" name="saveAddress" value="yes"
+                                           onChange={handleCheckboxChange}/>}
+                        label="Utilizar estos datos para el pago"
                     />
                 </Grid>
             </Grid>

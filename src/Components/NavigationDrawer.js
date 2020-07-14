@@ -22,8 +22,9 @@ import Button from "@material-ui/core/Button";
 import Products from "./Products";
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import BallotOutlinedIcon from '@material-ui/icons/Ballot';
-import {Link, Route, useLocation, Switch, useRouteMatch, useHistory, Redirect} from "react-router-dom";
+import {Link, Redirect, Route, Switch, useHistory, useRouteMatch} from "react-router-dom";
 import ProductsManagement from "./ProductsManagement";
+import OrdersManagement from "./OrdersManagement";
 
 
 function Copyright() {
@@ -207,7 +208,7 @@ export default function Dashboard() {
                                     </ListItemIcon>
                                     <ListItemText primary="Administración de productos"/>
                                 </ListItem>
-                                <ListItem button component={Link} to={`${url}/orders`}>
+                                <ListItem button component={Link} to={`${url}/ordersManagement`}>
                                     <ListItemIcon>
                                         <AssignmentIcon/>
                                     </ListItemIcon>
@@ -235,9 +236,7 @@ export default function Dashboard() {
                     <Switch>
                         <Route exact path="/home" render={props => <Products/>}/>
                         <Route path={`${path}/productsManagement`} render={props => <ProductsManagement/>}/>
-                        <Route path={`${path}/orders`}>
-                            dehsjfgsad
-                        </Route>
+                        <Route path={`${path}/ordersManagement`} render={props => <OrdersManagement/>}/>
                         <Route render={() => <Redirect to="/home"/>}/>
                     </Switch>
 
