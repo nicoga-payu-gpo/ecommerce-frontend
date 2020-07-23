@@ -7,6 +7,9 @@ import Container from '@material-ui/core/Container';
 import ProductCard from "./ProductCard";
 import axios from "axios";
 
+/**
+ * Custom theme definition.
+ */
 const useStyles = makeStyles((theme) => ({
     icon: {
         marginRight: theme.spacing(2),
@@ -25,10 +28,26 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/**
+ * Provide the available products for purchase view.
+ *
+ * @returns {*} The products view.
+ */
 export default function Products() {
+
+    /**
+     * Styles for the view.
+     */
     const classes = useStyles();
+
+    /**
+     *  Available products.
+     */
     const [products, setProducts] = useState([]);
 
+    /**
+     * Backend API call to get available products.
+     */
     useEffect(() => {
         axios.get("http://localhost:8080/API/products").then((res) => {
             setProducts(res.data)

@@ -5,8 +5,19 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
+/**
+ * Provides the sipping address  details view.
+ *
+ * @param props Props that contains the order details.
+ * @returns {*} Shipping address form view.
+ */
 export default function AddressForm(props) {
 
+    /**
+     * Handle change on the buyer information.
+     *
+     * @param event Event that contains the change.
+     */
     const handleBuyerChange = event => {
         const {name, value} = event.target;
         props.setPaymentRequest((prevState) => ({
@@ -14,6 +25,12 @@ export default function AddressForm(props) {
             [name]: value
         }));
     };
+
+    /**
+     * Handle change on the shipping address information.
+     *
+     * @param event Event that contains the change.
+     */
     const handleShippingAddressChange = event => {
         const {name, value} = event.target;
         props.setPaymentRequest((prevState) => ({
@@ -24,6 +41,12 @@ export default function AddressForm(props) {
             }
         }));
     };
+
+    /**
+     * Handle change on the same buyer and payer checkbox.
+     *
+     * @param event Event that contains the change.
+     */
     const handleCheckboxChange = event => {
         if (event.target.checked) {
             props.setSameBuyerAndPayer(true);

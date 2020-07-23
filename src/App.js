@@ -14,16 +14,16 @@ export default function App() {
     return (
         <Router>
 
-                {loggedIn === false ?
+                {!loggedIn ?
                     <Switch>
-                        <Route  path="/home" component={NavigationDrawer}/>
-                        <Route  path="/signIn" component={SignIn}/>
-                        <Route  path="/signUp" component={SignUp}/>
+                        <Route path="/home" component={NavigationDrawer}/>
+                        <Route path="/signIn" component={SignIn}/>
+                        <Route path="/signUp" component={SignUp}/>
                         <Route render={() => <Redirect to="/home"/>}/>
                     </Switch>
                     :
                     <Switch>
-                        <Route path="/home" component={NavigationDrawer}/>
+                        <Route exact path="/home" component={NavigationDrawer}/>
                         <Route render={() => <Redirect to="/home"/>}/>
                     </Switch>
 

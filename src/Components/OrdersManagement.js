@@ -19,6 +19,9 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 
+/**
+ * Table action icons.
+ * */
 const tableIcons = {
     Clear: forwardRef((props, ref) => <Clear color="action"{...props} ref={ref}/>),
     Refund: forwardRef((props, ref) => <Clear color="action"{...props} ref={ref}/>),
@@ -34,6 +37,9 @@ const tableIcons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref}/>)
 };
 
+/**
+ * Custom theme definition.
+ * */
 const useStyles = makeStyles((theme) => ({
     backdrop: {
         zIndex: theme.zIndex.drawer + 1,
@@ -41,11 +47,31 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
+/**
+ * Provide the orders management view.
+ *
+ * @returns {*} Order management view.
+ */
 export default function Orders() {
+
+    /**
+     * Styles for the view.
+     */
     const classes = useStyles();
+
+    /**
+     * React ref for table updates.
+     */
     const tableRef = React.createRef();
+
+    /**
+     * React reference for hooks.
+     */
     const {useState} = React;
+
+    /**
+     * Columns to display in the table for orders management.
+     */
     const [columns, setColumns] = useState([
         {title: 'Id', field: 'id'},
         {title: 'Email', field: 'user.email'},
@@ -54,12 +80,30 @@ export default function Orders() {
         {title: 'Estado', field: 'state'},
 
     ]);
+
+    /**
+     * Refund status snackbar open state.
+     */
     const [snackBarOpen, setSnackBarOpen] = useState(false);
+
+    /**
+     * Back drop open state.
+     */
     const [backdropOpen, setBackdropOpen] = useState(false);
+
+    /**
+     * Snackbar text to display.
+     */
     const [snackBarText, setSnackBarText] = useState({severity: "", message: ""});
+
+    /**
+     * Table data.
+     */
     const [data, setData] = useState([]);
 
-
+    /**
+     * Snack bar close handler.
+     */
     const handleSnackBarClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -67,10 +111,17 @@ export default function Orders() {
 
         setSnackBarOpen(false);
     };
+
+    /**
+     * Use of hooks to get orders when loading the view.
+     */
     useEffect(() => {
         updateData();
     }, []);
 
+    /**
+     * Backend API call to get al the orders in the system.
+     */
     function updateData() {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("accessToken");
         axios.get("http://localhost:8080/API/orders").then((res) => {
@@ -80,11 +131,15 @@ export default function Orders() {
         });
     }
 
+    /**
+     * Backend API call process refund on an order.
+     *
+     * @param order Order which is going to be refunded.
+     */
     function doRefund(order) {
         setBackdropOpen(true);
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("accessToken");
         axios.post("http://localhost:8080/API/orders/refund", order.id, {headers: {'Content-Type': 'text/plain'}}).then((res) => {
-            console.log(res);
             if (res.data.state === "REFUNDED") {
                 setSnackBarText({severity: "success", message: "El reembolso ha sido procesado con exito"});
             } else {
@@ -94,7 +149,6 @@ export default function Orders() {
             setBackdropOpen(false);
             setSnackBarOpen(true);
         }).catch(function (error) {
-            console.log(error);
             setBackdropOpen(false);
             setSnackBarText({severity: "error", message: "El reembolso no se ha realizado exitosamente."});
             setSnackBarOpen(true);

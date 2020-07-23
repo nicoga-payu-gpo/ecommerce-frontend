@@ -4,13 +4,39 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Box from "@material-ui/core/Box";
 
+/**
+ * Provide the payment form of an order.
+ *
+ * @param props Props that contains order details.
+ * @returns {*} Payment form view.
+ */
 export default function PaymentForm(props) {
 
+    /**
+     * Regular expresion to identify a Visa card number.
+     */
     const visaType = new RegExp("^(4)(\\d{12}|\\d{15})$|^(606374\\d{10}$)");
+
+    /**
+     * Regular expresion to identify a Diners card number.
+     */
     const dinersType = new RegExp("^3(?:0[0-5]|[68][0-9])[0-9]{11}$");
+
+    /**
+     * Regular expresion to identify a Amex card number.
+     */
     const amexType = new RegExp("^3[47][0-9]{13}$");
+
+    /**
+     * Regular expresion to identify a Master card number.
+     */
     const masterType = new RegExp("^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$");
 
+    /**
+     * Handle a change on the payment details in the  from.
+     *
+     * @param event Event that contains the specific change.
+     */
     const handlePaymentChange = event => {
         const {name, value} = event.target;
         props.setPaymentRequest((prevState) => ({
@@ -21,6 +47,12 @@ export default function PaymentForm(props) {
             }
         }));
     };
+
+    /**
+     * Handle a change on the billing address in the from.
+     *
+     * @param event Event that contains the specific change.
+     */
     const handleBillingAddressChange = event => {
         const {name, value} = event.target;
         props.setPaymentRequest((prevState) => ({
@@ -34,6 +66,12 @@ export default function PaymentForm(props) {
             }
         }));
     };
+
+    /**
+     * Handle a change on the card number in the from.
+     *
+     * @param event Event that contains the specific change.
+     */
     const handleCardNumberChange = event => {
         const {name, value} = event.target;
         let cardType = "";
@@ -57,6 +95,10 @@ export default function PaymentForm(props) {
             }
         }));
     };
+
+    /**
+     * Hook use to get if the payer details are the same of the buyer.
+     */
     useEffect(() => {
         if (props.sameBuyerAndPayer) {
             props.setPaymentRequest((prevState) => ({
@@ -78,6 +120,7 @@ export default function PaymentForm(props) {
             }));
         }
     }, []);
+
     return (
         <React.Fragment>
             <Typography variant="h6" gutterBottom>

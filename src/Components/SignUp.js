@@ -13,6 +13,9 @@ import Container from '@material-ui/core/Container';
 import axios from "axios";
 import {useHistory} from "react-router-dom";
 
+/**
+ * Copyright banner.
+ */
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -26,6 +29,9 @@ function Copyright() {
     );
 }
 
+/**
+ * Custom theme definition.
+ */
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
@@ -46,11 +52,33 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/**
+ * View that gives the user the ability tu signUp in the system.
+ *
+ * @returns {*} SignUp view.
+ */
 export default function SignUp() {
+
+    /**
+     * Styles for the view.
+     */
     const classes = useStyles();
+
+    /**
+     * Created user.
+     */
     const [newUser, setNewUser] = React.useState({email: "", password: "", fullName: ""});
+
+    /**
+     * Router history.
+     */
     let history = useHistory();
 
+    /**
+     * Handle changes on the user to be created.
+     *
+     * @param e Event that contains the property changed of the new user..
+     */
     const handleChangeNewUser = e => {
         const {name, value} = e.target;
         setNewUser(prevState => ({
@@ -59,6 +87,9 @@ export default function SignUp() {
         }))
     };
 
+    /**
+     * Backend API call for sign Up an user.
+     */
     function signUpUser() {
         axios.post("http://localhost:8080/API/user/signUp", newUser).then((res) => {
             alert("Cuenta creada exitosamente")

@@ -14,6 +14,9 @@ import Review from './Review';
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
+/**
+ * Copyright banner.
+ */
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -27,6 +30,9 @@ function Copyright() {
     );
 }
 
+/**
+ * Custom theme definition.
+ */
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
@@ -64,16 +70,52 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/**
+ * Steps of the payment process.
+ */
 const steps = ['Dirección de envío', 'Información de pago', 'Revisa tu orden'];
 
-
+/**
+ * Provides the checkout stepper view.
+ *
+ * @param props Props that contains the product for the order creation.
+ * @returns {*} Checkout stepper view.
+ */
 export default function Checkout(props) {
+
+    /**
+     * Styles for the view.
+     */
     const classes = useStyles();
+
+    /**
+     * Logged in user information.
+     */
     const user = JSON.parse(localStorage.getItem("user"));
+
+    /**
+     * Active step of the stepper view.
+     */
     const [activeStep, setActiveStep] = React.useState(0);
+
+    /**
+     * Defines if the buyer and the payer have te same information.
+     */
     const [sameBuyerAndPayer, setSameBuyerAndPayer] = React.useState(false);
+
+    /**
+     * Product on which is being processed the order.
+     */
     const [product, setProduct] = React.useState(props.product);
+
+    /**
+     * Backend API payment response.
+     */
     const [paymentResponse, setPaymentResponse] = React.useState({response: ""});
+
+    /**
+     * Payment request to send to the backend API.
+     */
     const [paymentRequest, setPaymentRequest] = React.useState({
         total: product.price,
         units: 1,
@@ -86,6 +128,9 @@ export default function Checkout(props) {
         user
     });
 
+    /**
+     * Backend API call in order to place the order and payment.
+     */
     function handlePlaceOrderChange() {
         console.log(paymentRequest)
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("accessToken");
@@ -95,8 +140,7 @@ export default function Checkout(props) {
                 ...paymentResponse,
                 response: res.data
             });
-            console.log(res.data);
-            console.log(paymentResponse);
+
 
         }).catch(function (error) {
             setPaymentResponse({
@@ -104,15 +148,22 @@ export default function Checkout(props) {
                 response: "ERROR"
             })
 
-            console.log(paymentResponse);
-            console.log(error);
         });
     }
 
+    /**
+     * Hook use for getting the product
+     */
     useEffect(() => {
         setProduct(props.product)
     }, []);
 
+    /**
+     * Gets the content depending on the step number.
+     *
+     * @param step Current step number.
+     * @returns {*} Step content for the provided number.
+     */
     function getStepContent(step) {
         switch (step) {
             case 0:
@@ -137,6 +188,11 @@ export default function Checkout(props) {
         }
     }
 
+    /**
+     * Provide the final checkout component depending on the response provided by de backend API.
+     *
+     * @returns {*} Component to show transaction result.
+     */
     function transactionResult() {
         if (paymentResponse.response.state === "APPROVED") {
             return <React.Fragment>
@@ -163,6 +219,9 @@ export default function Checkout(props) {
         }
     }
 
+    /**
+     * Handle nex step transition.
+     */
     const handleNext = () => {
         setActiveStep(activeStep + 1);
         if (activeStep === steps.length - 1) {
@@ -170,6 +229,9 @@ export default function Checkout(props) {
         }
     };
 
+    /**
+     * Handle back step transition.
+     */
     const handleBack = () => {
         setActiveStep(activeStep - 1);
     };

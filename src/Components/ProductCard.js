@@ -27,6 +27,9 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import {useHistory} from "react-router-dom";
 
+/**
+ * Custom theme definition.
+ */
 const useStyles = makeStyles((theme) => ({
     root: {
         maxWidth: 304,
@@ -44,50 +47,94 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
+/**
+ * Checkout transition.
+ */
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="left"  timeout={{enter:200000,exit:20000}} ref={ref} {...props} />;
 });
 
+/**
+ * Card that contains product info.
+ *
+ * @param props Properties.
+ * @returns {*} Product card.
+ */
 export default function ProductCard(props) {
+    /**
+     *Card styles theme.
+     */
     const cardStyles = useStyles();
+    /**
+     * Router history.
+     */
     const history = useHistory();
+    /**
+     * Card media style.
+     */
     const mediaStyles = useSlopeCardMediaStyles();
+    /**
+     * Card shadow theme.
+     */
     const shadowStyles = useSoftRiseShadowStyles();
+    /**
+     * Text style.
+     */
     const textCardContentStyles = useN01TextInfoContentStyles();
+    /**
+     * Checkout display state.
+     */
     const [checkOutOpen, setCheckOutOpen] = React.useState(false);
-    const [open, setOpen] = React.useState(false);
+    /**
+     * Sign in dialog display state.
+     */
+    const [dialogOpen, setDialogOpen] = React.useState(false);
 
+    /**
+     * Handle click on product purchase icon.
+     */
     const handleClickOpen = () => {
-        if (localStorage.getItem("accessToken") != null) {
+        if (localStorage.getItem("accessToken") != null && JSON.parse(localStorage.getItem("user")).role.trim() === "ROLE_USER") {
             setCheckOutOpen(true);
-        }else{
-            setOpen(true);
+        } else if (localStorage.getItem("accessToken") == null) {
+            setDialogOpen(true);
         }
 
     };
 
+    /**
+     * Handle close for checkout.
+     */
     const handleCheckoutClose = () => {
         setCheckOutOpen(false);
 
     };
 
+    /**
+     * Handle close for sign in required dialog.
+     */
     const handleClose = () => {
-        setOpen(false);
+        setDialogOpen(false);
         history.push("/signIn");
     };
 
-    function format (n) {
+    /**
+     * Format a number to a currency format.
+     * @param n Number to format.
+     * @returns {string} Formatted number.
+     */
+    function format(n) {
         return n.toFixed(2).replace('.', ',').replace(/\d{3}(?=(\d{3})*,)/g, function (s) {
             return '.' + s
         })
     }
+
     return (
         <Grid item key={props.product.id} xs={12} sm={6} md={3}>
             <Card className={cx(cardStyles.root, shadowStyles.root)}>
                 <CardMedia
                     classes={mediaStyles}
-                    image={"https://source.unsplash.com/random"}
+                    image={"https://d1uona6pizvebs.cloudfront.net/catalog/product/cache/4fd94122ce9049ee0590091261a19421/A/r/Areteshojasdefrailejn_2.jpg"}
                 />
                 <CardContent className={cardStyles.content}>
                     <TextInfoContent
@@ -128,13 +175,14 @@ export default function ProductCard(props) {
                 <Checkout product={props.product}/>
             </Dialog>
             <Dialog
-                open={open}
+                open={dialogOpen}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">{"Inicio de sesión requerido"}</DialogTitle>
                 <DialogContent>
+
                     <DialogContentText id="alert-dialog-description">
                         Para realizar una compra es necesario que inicie sesión.
                     </DialogContentText>

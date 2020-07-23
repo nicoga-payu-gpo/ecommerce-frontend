@@ -26,7 +26,9 @@ import {Link, Redirect, Route, Switch, useHistory, useRouteMatch} from "react-ro
 import ProductsManagement from "./ProductsManagement";
 import OrdersManagement from "./OrdersManagement";
 
-
+/**
+ * Copyright banner.
+ */
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -40,8 +42,14 @@ function Copyright() {
     );
 }
 
+/**
+ * Navigation drawer width.
+ */
 const drawerWidth = 240;
 
+/**
+ * Custom theme definition.
+ */
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
@@ -121,30 +129,73 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Dashboard() {
-    let { path, url } = useRouteMatch();
+/**
+ * Provide the navigation drawer main view.
+ *
+ * @returns {*} Navigation drawer component.
+ */
+export default function NavigationDrawer() {
+    /**
+     * Router path and URL for route match.
+     */
+    let {path, url} = useRouteMatch();
+
+    /**
+     * History provided by router.
+     */
     let history = useHistory();
+
+    /**
+     * Styles for the view.
+     */
     const classes = useStyles();
+
+    /**
+     * Drawer open state.
+     */
     const [open, setOpen] = React.useState(false);
+
+    /**
+     * Logged status of an user.
+     */
     const [loggedIn, setLoggedIn] = React.useState(false);
+
+    /**
+     * Logged user details.
+     */
     const [userRole, setUserRole] = React.useState("");
 
+    /**
+     * Open drawer handler.
+     */
     const handleDrawerOpen = () => {
         setOpen(true);
     };
+
+    /**
+     * Close drawer handler.
+     */
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    /**
+     * Logout user handler.
+     */
     const logout = () => {
         localStorage.clear()
         history.push("/home");
         window.location.reload()
     };
+
+    /**
+     * Hook for getting logged user before the view renders.
+     */
     useEffect(() => {
         if (localStorage.getItem("accessToken") != null) {
             setLoggedIn(true);
         }
-        if(localStorage.getItem("user")!=null){
+        if (localStorage.getItem("user") != null) {
             setUserRole(JSON.parse(localStorage.getItem("user")).role);
         }
 
@@ -233,12 +284,19 @@ export default function Dashboard() {
             <main className={classes.content}>
                 <div className={classes.appBarSpacer}/>
                 <Container maxWidth="lg" className={classes.container}>
-                    <Switch>
-                        <Route exact path="/home" render={props => <Products/>}/>
-                        <Route path={`${path}/productsManagement`} render={props => <ProductsManagement/>}/>
-                        <Route path={`${path}/ordersManagement`} render={props => <OrdersManagement/>}/>
-                        <Route render={() => <Redirect to="/home"/>}/>
-                    </Switch>
+                    {loggedIn ?
+                        <Switch>
+                            <Route exact path="/home" render={props => <Products/>}/>
+                            <Route path={`${path}/productsManagement`} render={props => <ProductsManagement/>}/>
+                            <Route path={`${path}/ordersManagement`} render={props => <OrdersManagement/>}/>
+                            <Route render={() => <Redirect to="/home"/>}/>
+                        </Switch>
+                        :
+                        <Switch>
+                            <Route exact path="/home" render={props => <Products/>}/>
+                            <Route render={() => <Redirect to="/home"/>}/>
+                        </Switch>
+                    }
 
 
                     <Box pt={4}>

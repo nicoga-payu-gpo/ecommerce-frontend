@@ -6,7 +6,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Grid from '@material-ui/core/Grid';
 
-
+/**
+ * Custom theme definition.
+ */
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(1, 0),
@@ -19,13 +21,28 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/**
+ * Format a number to a currency format.
+ * @param n Number to format.
+ * @returns {string} Formatted number.
+ */
 function format(n) {
     return n.toFixed(2).replace('.', ',').replace(/\d{3}(?=(\d{3})*,)/g, function (s) {
         return '.' + s
     })
 }
 
+/**
+ * Provide the review view to confirm an order.
+ *
+ * @param props Props that contains order details.
+ * @returns {*} Order review view.
+ */
 export default function Review(props) {
+
+    /**
+     * Styles for the view.
+     */
     const classes = useStyles();
 
     return (

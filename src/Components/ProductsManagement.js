@@ -18,6 +18,9 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 
+/**
+ * Table action icons.
+ * */
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref}/>),
     Check: forwardRef((props, ref) => <Check color="action" {...props} ref={ref}/>),
@@ -38,10 +41,17 @@ const tableIcons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref}/>)
 };
 
-
+/**
+ * Provides the view that gives the user the ability to manage the products.
+ *
+ * @returns {*} Product management view
+ */
 export default function Products() {
-    const {useState} = React;
-    const [columns, setColumns] = useState([
+
+    /**
+     * Columns of the table that contains the products.
+     */
+    const [columns, setColumns] = React.useState([
         {title: 'Nombre', field: 'name'},
         {title: 'Descripción', field: 'description'},
         {title: 'Precio unitario', field: 'price', type: 'currency'},
@@ -49,7 +59,14 @@ export default function Products() {
 
     ]);
 
-    const [data, setData] = useState([]);
+    /**
+     * Data to display in the table.
+     */
+    const [data, setData] = React.useState([]);
+
+    /**
+     * Backend API call to get all the products in the platform.
+     */
     useEffect(() => {
         axios.get("http://localhost:8080/API/products").then((res) => {
             setData(res.data)
@@ -58,31 +75,48 @@ export default function Products() {
         });
     }, []);
 
+    /**
+     * Backend API call to update a product.
+     *
+     * @param product Product to update.
+     */
     function updateProduct(product) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("accessToken");
-        axios.put("http://localhost:8080/API/products",product).then((res) => {
+        axios.put("http://localhost:8080/API/products", product).then((res) => {
             console.log(res);
         }).catch(function (error) {
             console.log(error);
         });
     }
 
+    /**
+     * Backend API call to create a product.
+     *
+     * @param product Product to create.
+     */
     function createProduct(product) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("accessToken");
-        axios.post("http://localhost:8080/API/products",product).then((res) => {
+        axios.post("http://localhost:8080/API/products", product).then((res) => {
             console.log(res);
         }).catch(function (error) {
             console.log(error);
         });
     }
+
+    /**
+     * Backend API call to delete a product.
+     *
+     * @param productId Product to delete.
+     */
     function deleteProduct(productId) {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("accessToken");
-        axios.delete("http://localhost:8080/API/products/"+productId).then((res) => {
+        axios.delete("http://localhost:8080/API/products/" + productId).then((res) => {
             console.log(res);
         }).catch(function (error) {
             console.log(error);
         });
     }
+
     return (
         <div style={{maxWidth: '100%'}}>
 

@@ -13,8 +13,12 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import axios from 'axios';
-import { useHistory } from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
+
+/**
+ * Copyright banner.
+ */
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -28,6 +32,9 @@ function Copyright() {
     );
 }
 
+/**
+ * Custom theme definition.
+ */
 const useStyles = makeStyles((theme) => ({
     root: {
         height: '100vh',
@@ -59,13 +66,33 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/**
+ * Provides the view in order to login a user in the system.
+ *
+ * @returns {*} Sign in view.
+ */
 export default function SignInSide() {
+
+    /**
+     * Styles for the view.
+     */
     const classes = useStyles();
+
+    /**
+     * Router history.
+     */
     let history = useHistory();
+
+    /**
+     * User to attempt the login in the system.
+     */
     const [user, setUser] = React.useState({email: "", password: ""});
 
+    /**
+     * Backend API call for login the user.
+     */
     function signInUser() {
-        axios.post("http://localhost:8080/API/user/signIn",user).then((res) => {
+        axios.post("http://localhost:8080/API/user/signIn", user).then((res) => {
             localStorage.setItem("accessToken", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
             history.push("/home")
@@ -75,6 +102,11 @@ export default function SignInSide() {
         });
     }
 
+    /**
+     * Handle changes on the user to be logged in.
+     *
+     * @param e Event that contains the property changed of the user.
+     */
     const handleChangeUser = e => {
         const {name, value} = e.target;
         setUser(prevState => ({
